@@ -156,6 +156,14 @@ body {
   content: ''; width: 30px; height: 1px; background: #333;
 }
 
+.hero .flower{position:absolute;width:80px;height:80px;text-align:center;pointer-events:none;opacity:0.8;}
+.hero .flower:nth-child(1){top:40px;left:40px;transform:rotate(-12deg);}
+.hero .flower:nth-child(2){top:40px;right:px;transform:rotate(18deg);}
+.hero .flower:nth-child(3){bottom:40px;left:40px;transform:rotate(-24deg);}
+.hero .flower:nth-child(4){bottom:40px;right:40px;transform:rotate(14deg);}
+.hero .flower:nth-child(5){top:50%;left:50px;transform:rotate(8deg) translateY(-50%);}
+.hero .flower:nth-child(6){top:50%;right:50px;transform:rotate(-18deg) translateY(-50%);}
+
 /* ── MARQUEE ── */
 .marquee-wrap {
   overflow: hidden;
@@ -595,6 +603,8 @@ footer .ft-name { color: var(--y); }
     and the audacity of someone who thinks <strong> you deserve your own corner of the internet.</strong> 
   </p>
   <div class="scroll-cue">21 years old (MashaAllah) GRANDMAAAAAAAAAAAAA</div>
+  <img class="flower" src="images/image-removebg-preview.png" alt="flower">
+  <img class="flower" src="images/image-removebg-preview (1).png" alt="flower">
 </section>
 
 <!-- MARQUEE -->
@@ -674,6 +684,328 @@ footer .ft-name { color: var(--y); }
     </div>
   </div>
 </section>
+
+
+<!-- COLOR CRUSH PUZZLE -->
+<style>
+:root {
+  --font-sans: 'Syne', sans-serif;
+  --color-border-tertiary: rgba(255,255,255,0.12);
+  --color-background-secondary: #111;
+  --color-background-primary: #0f0f0f;
+  --color-text-secondary: #888;
+  --color-text-primary: #f5f5f0;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+#gc{position:relative;padding:1rem;font-family:var(--font-sans);user-select:none;max-width:760px;margin:0 auto;background:var(--color-background-primary);border:1px solid rgba(255,255,255,0.08);border-radius:16px;}
+#gc .flower{position:absolute;width:54px;height:54px;font-size:34px;line-height:54px;text-align:center;pointer-events:none;opacity:0.92;}
+#gc .flower:nth-child(1){top:-22px;left:18px;transform:rotate(-12deg);}
+#gc .flower:nth-child(2){top:10px;right:-22px;transform:rotate(18deg);}
+#gc .flower:nth-child(3){bottom:12px;left:-22px;transform:rotate(-24deg);}
+#gc .flower:nth-child(4){bottom:22px;right:24px;transform:rotate(14deg);}
+#gc .flower:nth-child(5){top:48%;left:-28px;transform:rotate(8deg);}
+#gc .flower:nth-child(6){top:58%;right:-30px;transform:rotate(-18deg);}
+#hud{display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap;justify-content:space-between;}
+.hud-box{background:var(--color-background-secondary);border-radius:8px;padding:8px 14px;font-size:13px;color:var(--color-text-secondary);}
+.hud-box span{display:block;font-size:20px;font-weight:500;color:var(--color-text-primary);}
+#moves-left-bar{flex:1;min-width:120px;}
+#grid-wrap{display:grid;gap:5px;margin-bottom:12px;}
+.tile{border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500;transition:transform 0.1s;border:2.5px solid transparent;}
+.tile:active{transform:scale(0.93);}
+.tile.selected{border-color:#fff;transform:scale(1.08);}
+.tile.matched{opacity:0;pointer-events:none;transition:opacity 0.25s;}
+.tile.falling{transition:transform 0.2s;}
+.tile.hint-flash{border-color:#fff;animation:hflash 0.5s 3;}
+@keyframes hflash{0%,100%{border-color:transparent}50%{border-color:#fff}}
+#goal-row{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center;justify-content:center;}
+.goal-chip{border-radius:99px;padding:5px 12px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:5px;}
+#msg{min-height:32px;font-size:14px;color:var(--color-text-secondary);margin-bottom:8px;text-align:center;}
+#bottom-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;}
+#bottom-btns button{flex:1;min-width:120px;border:0.5px solid var(--color-border-secondary);border-radius:8px;padding:9px 10px;font-size:13px;background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;font-family:var(--font-sans);}
+#bottom-btns button:hover{background:var(--color-background-secondary);}
+#overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,0.55);border-radius:12px;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:10;}
+#overlay.show{display:flex;}
+#overlay-box{background:var(--color-background-primary);border-radius:12px;padding:24px 28px;text-align:center;max-width:240px;}
+#overlay-box h2{font-size:20px;font-weight:500;margin-bottom:6px;color:var(--color-text-primary);}
+#overlay-box p{font-size:13px;color:var(--color-text-secondary);margin-bottom:14px;}
+#overlay-box button{background:#7F77DD;border:none;border-radius:8px;padding:10px 20px;color:#fff;font-size:14px;cursor:pointer;font-family:var(--font-sans);}
+#wrap{position:relative;border-radius:12px;width:fit-content;margin:0 auto;}
+</style>
+
+<!-- COLOR CRUSH PUZZLE -->
+<div id="gc">
+  <div id="hud">
+    <div class="hud-box">Level<span id="lvl-num">1</span></div>
+    <div class="hud-box">Score<span id="score-disp">0</span></div>
+    <div class="hud-box" id="moves-left-bar">Moves left<span id="moves-disp">20</span></div>
+    <div class="hud-box">Combo<span id="combo-disp">x1</span></div>
+  </div>
+  <div id="goal-row"></div>
+  <div id="msg">Match 3 or more tiles of the same color!</div>
+  <div id="wrap">
+    <div id="grid-wrap"></div>
+    <div id="overlay">
+      <div id="overlay-box">
+        <h2 id="ov-title">Level complete!</h2>
+        <p id="ov-msg">You crushed it.</p>
+        <button id="ov-btn" onclick="nextLevel()">Next level</button>
+      </div>
+    </div>
+  </div>
+  <div id="bottom-btns">
+    <button onclick="useHint()">Hint</button>
+    <button onclick="shuffleBoard()">Shuffle</button>
+    <button onclick="initLevel()">Restart</button>
+  </div>
+</div>
+
+<script>
+const COLORS=[
+  {bg:'#D4537E',text:'#fff',label:'pink'},
+  {bg:'#7F77DD',text:'#fff',label:'purple'},
+  {bg:'#EF9F27',text:'#fff',label:'orange'},
+  {bg:'#1D9E75',text:'#fff',label:'teal'},
+  {bg:'#378ADD',text:'#fff',label:'blue'},
+  {bg:'#D85A30',text:'#fff',label:'coral'},
+];
+const SHAPES=['★','●','■','▲','♦','✿'];
+
+const LEVELS=[
+  {size:6,colors:4,moves:20,goals:{pink:10,purple:10},shapes:false},
+  {size:6,colors:4,moves:18,goals:{pink:12,orange:12},shapes:false},
+  {size:7,colors:5,moves:20,goals:{teal:15,blue:15},shapes:true},
+  {size:7,colors:5,moves:18,goals:{coral:15,purple:15,orange:10},shapes:true},
+  {size:8,colors:6,moves:22,goals:{pink:18,teal:18,blue:12},shapes:true},
+];
+
+let board=[],rows,cols,numColors,movesLeft,score,combo,goals,goalProgress,levelIdx=0,selected=null,busy=false;
+
+function cfg(){return LEVELS[Math.min(levelIdx, LEVELS.length - 1)];}
+
+function initLevel(){
+  const c=cfg();
+  rows=cols=c.size; numColors=c.colors; movesLeft=c.moves;
+  score=0; combo=1; selected=null; busy=false;
+  goals={...c.goals};
+  goalProgress={};
+  Object.keys(goals).forEach(k=>goalProgress[k]=0);
+  generateBoard();
+  renderBoard();
+  updateHUD();
+  renderGoals();
+  setMsg('Match 3+ to crush the goals!');
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('lvl-num').textContent=levelIdx+1;
+}
+
+function generateBoard(){
+  const c=cfg();
+  board=[];
+  for(let r=0;r<rows;r++){
+    board.push([]);
+    for(let cc2=0;cc2<cols;cc2++){
+      board[r].push(randomTile());
+    }
+  }
+  while(!hasMoves()) board=board.map(row=>row.map(()=>randomTile()));
+}
+
+function randomTile(){
+  const ci=Math.floor(Math.random()*numColors);
+  return {ci, shape:SHAPES[ci]};
+}
+
+function renderBoard(){
+  const gw=document.getElementById('grid-wrap');
+  const size=Math.min(52, Math.floor((Math.min(window.innerWidth,480)-40)/cols));
+  gw.style.gridTemplateColumns=`repeat(${cols},${size}px)`;
+  gw.style.width=(size*cols+5*(cols-1))+'px';
+  gw.innerHTML='';
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const t=board[r][c];
+      const el=document.createElement('div');
+      el.className='tile';
+      el.style.cssText=`width:${size}px;height:${size}px;background:${COLORS[t.ci].bg};color:${COLORS[t.ci].text};font-size:${Math.round(size*0.38)}px;`;
+      el.dataset.r=r; el.dataset.c=c;
+      el.textContent=t.shape;
+      el.onclick=()=>handleClick(r,c);
+      gw.appendChild(el);
+    }
+  }
+}
+
+function tileEl(r,c){return document.querySelector(`.tile[data-r="${r}"][data-c="${c}"]`);}
+
+function handleClick(r,c){
+  if(busy||movesLeft<=0)return;
+  if(selected===null){selected={r,c};tileEl(r,c).classList.add('selected');return;}
+  const {r:r1,c:c1}=selected;
+  tileEl(r1,c1).classList.remove('selected');
+  if(r1===r&&c1===c){selected=null;return;}
+  if(Math.abs(r-r1)+Math.abs(c-c1)!==1){selected={r,c};tileEl(r,c).classList.add('selected');return;}
+  selected=null;
+  swap(r1,c1,r,c);
+  const matches=findMatches();
+  if(matches.length===0){swap(r,c,r1,c1);setMsg('No match there — try again!');return;}
+  movesLeft--;
+  busy=true;
+  processMatches(matches);
+}
+
+function swap(r1,c1,r2,c2){const t=board[r1][c1];board[r1][c1]=board[r2][c2];board[r2][c2]=t;}
+
+function findMatches(){
+  const matched=new Set();
+  for(let r=0;r<rows;r++)for(let c=0;c<cols-2;c++){
+    if(board[r][c].ci===board[r][c+1].ci&&board[r][c].ci===board[r][c+2].ci){
+      let e=c+2;while(e+1<cols&&board[r][e+1].ci===board[r][c].ci)e++;
+      for(let x=c;x<=e;x++)matched.add(r+','+x);
+    }
+  }
+  for(let c=0;c<cols;c++)for(let r=0;r<rows-2;r++){
+    if(board[r][c].ci===board[r+1][c].ci&&board[r][c].ci===board[r+2][c].ci){
+      let e=r+2;while(e+1<rows&&board[e+1][c].ci===board[r][c].ci)e++;
+      for(let x=r;x<=e;x++)matched.add(x+','+c);
+    }
+  }
+  return [...matched].map(s=>{const[r,c]=s.split(',').map(Number);return{r,c,ci:board[r][c].ci};});
+}
+
+function processMatches(matches){
+  matches.forEach(({r,c,ci})=>{
+    const label=COLORS[ci].label;
+    if(goalProgress[label]!==undefined)goalProgress[label]++;
+    tileEl(r,c).classList.add('matched');
+  });
+  const pts=matches.length*100*combo;
+  score+=pts;
+  combo=Math.min(combo+1,8);
+  setTimeout(()=>{
+    matches.forEach(({r,c})=>{board[r][c]=null;});
+    dropTiles();
+    fillBoard();
+    renderBoard();
+    updateHUD();
+    renderGoals();
+    setTimeout(()=>{
+      const next=findMatches();
+      if(next.length>0){processMatches(next);} else{combo=1;updateHUD();busy=false;checkWinLose();}
+    },180);
+  },280);
+}
+
+function dropTiles(){
+  for(let c=0;c<cols;c++){
+    let empty=rows-1;
+    for(let r=rows-1;r>=0;r--){
+      if(board[r][c]!==null){board[empty][c]=board[r][c];if(empty!==r)board[r][c]=null;empty--;}
+    }
+  }
+}
+
+function fillBoard(){
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)if(board[r][c]===null)board[r][c]=randomTile();
+}
+
+function hasMoves(){
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    const dirs=[[0,1],[1,0]];
+    for(const[dr,dc]of dirs){
+      const nr=r+dr,nc=c+dc;
+      if(nr<rows&&nc<cols){
+        swap(r,c,nr,nc);
+        if(findMatches().length>0){swap(r,c,nr,nc);return true;}
+        swap(r,c,nr,nc);
+      }
+    }
+  }
+  return false;
+}
+
+function checkWinLose(){
+  const won=Object.keys(goals).every(k=>goalProgress[k]>=goals[k]);
+  if(won){showOverlay(true);return;}
+  if(movesLeft<=0){
+    const allDone=Object.keys(goals).every(k=>goalProgress[k]>=goals[k]);
+    if(!allDone)showOverlay(false);
+    else showOverlay(true);
+  }
+}
+
+function showOverlay(win){
+  document.getElementById('ov-title').textContent=win?'Level crushed! 🎉':'Out of moves!';
+  document.getElementById('ov-msg').textContent=win?'Kia baat hai jiii':`Score: ${score} — so close!`;
+  document.getElementById('ov-btn').textContent=win?'Next level →':'Try again';
+  document.getElementById('ov-btn').onclick=win?nextLevel:initLevel;
+  document.getElementById('overlay').classList.add('show');
+}
+
+function nextLevel(){levelIdx=Math.min(levelIdx+1,LEVELS.length-1);initLevel();}
+
+function updateHUD(){
+  document.getElementById('score-disp').textContent=score.toLocaleString();
+  document.getElementById('moves-disp').textContent=movesLeft;
+  document.getElementById('combo-disp').textContent='x'+combo;
+}
+
+function renderGoals(){
+  const gr=document.getElementById('goal-row');
+  gr.innerHTML='<span style="font-size:12px;color:var(--color-text-secondary);margin-right:4px;">Goals:</span>';
+  Object.keys(goals).forEach(label=>{
+    const done=Math.min(goalProgress[label]||0,goals[label]);
+    const total=goals[label];
+    const ci=COLORS.findIndex(c=>c.label===label);
+    const bg=ci>=0?COLORS[ci].bg:'#888';
+    const complete=done>=total;
+    const chip=document.createElement('div');
+    chip.className='goal-chip';
+    chip.style.cssText=`background:${bg};color:#fff;opacity:${complete?0.5:1};`;
+    chip.textContent=`${label} ${done}/${total}${complete?' ✓':''}`;
+    gr.appendChild(chip);
+  });
+}
+
+function setMsg(m){document.getElementById('msg').textContent=m;}
+
+function useHint(){
+  if(busy)return;
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    const dirs=[[0,1],[1,0]];
+    for(const[dr,dc]of dirs){
+      const nr=r+dr,nc=c+dc;
+      if(nr<rows&&nc<cols){
+        swap(r,c,nr,nc);
+        if(findMatches().length>0){
+          swap(r,c,nr,nc);
+          const e1=tileEl(r,c),e2=tileEl(nr,nc);
+          if(e1)e1.classList.add('hint-flash');
+          if(e2)e2.classList.add('hint-flash');
+          setTimeout(()=>{if(e1)e1.classList.remove('hint-flash');if(e2)e2.classList.remove('hint-flash');},1600);
+          setMsg('Try swapping those flashing tiles!');
+          return;
+        }
+        swap(r,c,nr,nc);
+      }
+    }
+  }
+  setMsg('No moves left — shuffling!');shuffleBoard();
+}
+
+function shuffleBoard(){
+  for(let i=rows*cols-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    const r1=Math.floor(i/cols),c1=i%cols;
+    const r2=Math.floor(j/cols),c2=j%cols;
+    swap(r1,c1,r2,c2);
+  }
+  if(!hasMoves())generateBoard();
+  renderBoard();
+  setMsg('Shuffled! Find your matches.');
+}
+
+initLevel();
+</script>
 
 <!-- small msg -->
 <section class="l-section">
